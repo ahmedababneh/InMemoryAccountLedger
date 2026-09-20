@@ -52,12 +52,12 @@ CSS = """
 /* Tuned for a 3-4 page document. The content is dense and mostly tables, so
    the layout is compressed rather than the text cut: tighter leading, smaller
    table type, no per-section page breaks. */
-@page { size: A4; margin: 12mm 12mm 14mm 12mm; }
+@page { size: A4; margin: 12mm 12mm 12mm 12mm; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body {
   font-family: "Bitstream Charter", "DejaVu Serif", serif;
   font-size: 8.5pt;
-  line-height: 1.33;
+  line-height: 1.30;
   color: #1a1a1a;
   margin: 0;
   hyphens: none;
@@ -83,7 +83,7 @@ body > hr { display: none; }
 h2 {
   font-family: "DejaVu Sans", sans-serif;
   font-size: 11pt; font-weight: 700; color: #111;
-  margin: 5mm 0 2mm 0; padding-bottom: 1.2mm;
+  margin: 4.4mm 0 1.8mm 0; padding-bottom: 1.1mm;
   border-bottom: 1px solid #c8c8c8;
   break-after: avoid; break-inside: avoid;
 }
@@ -113,7 +113,7 @@ pre {
 pre code { background: none; padding: 0; font-size: 7.2pt; line-height: 1.35; }
 
 table {
-  width: 100%; border-collapse: collapse; margin: 0 0 2.4mm 0;
+  width: 100%; border-collapse: collapse; margin: 0 0 2.1mm 0;
   font-family: "DejaVu Sans", sans-serif;
   font-size: 6.9pt; line-height: 1.28; break-inside: auto;
 }

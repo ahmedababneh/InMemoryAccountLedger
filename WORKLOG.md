@@ -359,3 +359,28 @@ still produced four pages, just with smaller type and more whitespace on the
 last one. Reverted — no page saved, only legibility lost. The content sits at
 about three and a half pages, so four is where it lands without either cutting
 material or dropping below a readable size.
+
+### 2026-09-20T16:34Z — trimmed for defensibility, now 3 pages
+
+Asked to trim so the document is easy to defend, which is a different cut from
+"make it shorter". Went after the claims I could not ground in the repository
+rather than the longest passages:
+
+* Dropped the generic banking assertions from section 2 — downstream cache
+  divergence, nostro/scheme reconciliation, AML monitoring effectiveness, tax
+  attribution. All plausible, none demonstrable from this code, and each one an
+  invitation to be asked how I know. Kept the four that point at my own output:
+  Day 2 restating 250.00 to 225.00, two fees landing in already-reported days,
+  back-valued interest adjustments, and no closed-period concept.
+* Softened the card-scheme expiry figures. I had written "~7 days retail, ~30
+  travel and vehicle rental" as though it were a standard. It varies by scheme
+  and merchant category, so it now says that instead of quoting numbers I
+  cannot source.
+* Cut the "partition by account" and sharding suggestion from section 1 —
+  speculative for a system with no persistence layer at all.
+* Consolidated six one-line rows out of the section 4 table into a single
+  sentence. Nothing hidden, but a row per cross-reference was padding.
+
+Layout: one whitespace nudge (bottom margin, leading 1.33 to 1.30) with type
+sizes untouched. Unlike the earlier attempt at shrinking the type, this one
+actually bought a page. Three pages, 3.7k / 4.6k / 5.3k characters.
