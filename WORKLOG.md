@@ -384,3 +384,20 @@ rather than the longest passages:
 Layout: one whitespace nudge (bottom margin, leading 1.33 to 1.30) with type
 sizes untouched. Unlike the earlier attempt at shrinking the type, this one
 actually bought a page. Three pages, 3.7k / 4.6k / 5.3k characters.
+
+### 2026-09-20T16:47Z — ARCHITECTURE.md and ARCHITECTURE.pdf removed
+
+Removed both at the user's request, along with the README row that linked to
+them. Left in place deliberately:
+
+* `tools/md2pdf.py` — now orphaned, since its argument defaults and footer
+  string both named ARCHITECTURE. It is a general Markdown-to-PDF converter
+  and still works on any input, but nothing in the repository uses it. Flagged
+  for the user rather than removed on my own initiative.
+* The earlier entries in this log describing that work. This file is a
+  timestamped record of what actually happened, so editing the history out of
+  it to match the current tree would make it a worse record, not a tidier one.
+
+Both files remain in git history; this is a delete of the working tree, not a
+rewrite. Purging them from history would need a force-push, which I have not
+done and would not do without being asked explicitly.

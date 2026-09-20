@@ -248,4 +248,3 @@ tests/
 | [NUMBERS.md](NUMBERS.md) | Every constant, and a measured sensitivity analysis for each |
 | [AMBIGUITIES.md](AMBIGUITIES.md) | 22 ambiguities, numbered and cited from source comments |
 | [WORKLOG.md](WORKLOG.md) | Timestamped build log, including the things that went wrong |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Scale limits, the value-dating surface in production, authorization lifecycle, and every scope cut ranked by risk. Also as [ARCHITECTURE.pdf](ARCHITECTURE.pdf), regenerated with `python3 tools/md2pdf.py ARCHITECTURE.md ARCHITECTURE.pdf` |
