@@ -315,3 +315,32 @@ window for two accounts would take a quarter of an hour.
 And at 200 accounts over 30 days there are 2,363 accrual records against 1,343
 ledger entries: the derived journal is larger than the log it is derived from,
 on a fixed 300 events. Accruals grow with accounts x days, not with volume.
+
+### 2026-09-20T15:48Z — ARCHITECTURE.md, and two measurement errors of my own
+
+Wrote up the scale, value-dating, authorization-lifecycle and scope-cut
+analysis. Two things I got wrong first and had to correct:
+
+1. **My benchmark was instrumented.** The first scaling run wrapped every
+   replay in `tracemalloc`, which hooks every allocation. It reported 125.62s
+   for a 180-day window; the honest figure is 38.51s. Roughly a 3x inflation,
+   uniformly applied, so the *shape* held — but I had drafted absolute numbers
+   from it. Re-ran without instrumentation and rewrote the table.
+
+2. **I claimed the back-value window fixes compute and storage "at once".** It
+   does not. The paired run showed accrual counts identical between windowed
+   and unbounded (146/146, 251/251, 728/728), which I nearly published as
+   evidence for a claim it actually refutes. The reason was my generator only
+   backdated within five days, so a five-day window had nothing to suppress.
+   Re-ran with deeper backdating: the window cuts revisions 35-64% once
+   backdating exceeds it, but cannot touch the baseline accounts x days growth.
+   Storage needs accrual compaction, which is a separate change.
+
+The second one is the more instructive failure. The measurement was right and
+my reading of it was wrong, in the direction that flattered the argument I had
+already written.
+
+Also confirmed by direct test: an account that transacts once and then sits
+idle appends one accrual record per day forever — 40 records over 40 idle days
+— unless its balance is below the AED 12.50 dust threshold, in which case zero.
+The journal grows only for accounts worth having.
