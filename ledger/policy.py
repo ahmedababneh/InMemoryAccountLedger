@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Dict, Optional
 
-from .money import AED, BHD, Currency, Money
+from .money import AED, Currency, Money
 
 
 class PolicyNotConfigured(Exception):

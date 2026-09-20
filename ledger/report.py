@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import List
 
 from .engine import Engine
-from .records import Day, EntryKind, Outcome
+from .records import Day, Outcome
 
 RULE = "=" * 78
 THIN = "-" * 78
@@ -74,7 +74,6 @@ def render(engine: Engine) -> str:
             out.append(detail)
 
         for account_id in book.accounts:
-            currency = book.currency_of(account_id)
             as_of = book.closing_balance(account_id, day, known_through=day)
             available = book.available_balance(account_id, day)
             held = book.active_holds_total(account_id, day)

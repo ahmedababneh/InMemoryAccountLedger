@@ -7,7 +7,6 @@ precision."
 import unittest
 from decimal import Decimal
 
-from .support import replayed  # noqa: F401  (keeps sys.path setup in one place)
 from ledger.money import (
     AED,
     BHD,

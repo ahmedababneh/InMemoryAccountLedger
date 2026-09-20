@@ -3,11 +3,11 @@
 import unittest
 from decimal import Decimal
 
-from .support import fresh, replayed
-from ledger.book import Account, Book
+from .support import replayed
+from ledger.book import Account
 from ledger.engine import Engine, split_into_instalments
 from ledger.money import AED, BHD
-from ledger.policy import DEFAULT_POLICY, Policy, PolicyNotConfigured
+from ledger.policy import DEFAULT_POLICY, PolicyNotConfigured
 from ledger.records import EntryKind, Event, EventType, Outcome
 
 

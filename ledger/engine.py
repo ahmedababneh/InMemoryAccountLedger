@@ -19,7 +19,7 @@ days must be re-judged for an overdraft fee and re-accrued.
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List
 
 from .book import Account, Book
 from .money import Money
@@ -29,7 +29,6 @@ from .records import (
     EntryKind,
     Event,
     EventType,
-    HoldAction,
     Outcome,
 )
 
@@ -49,7 +48,6 @@ def split_into_instalments(total: Money, count: int) -> tuple[Money, ...]:
     if count < 1:
         raise ValueError("instalment count must be >= 1")
     currency = total.currency
-    scale = 10 ** currency.minor_units
     units = int(total.amount.scaleb(currency.minor_units))
     sign = -1 if units < 0 else 1
     magnitude = abs(units)

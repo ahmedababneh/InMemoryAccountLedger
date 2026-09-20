@@ -18,7 +18,6 @@ import unittest
 
 from .support import replayed
 from ledger.money import AED
-from ledger.records import EntryKind, Outcome
 
 
 class ReversalDoesNotUnwindConsequentialFees(unittest.TestCase):
