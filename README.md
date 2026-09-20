@@ -1,6 +1,6 @@
 # In-memory account ledger core
 
-A value-dated, append-only double-entry ledger core in pure Python. No web
+A value-dated, append-only ledger core in pure Python. No web
 layer, no persistence, no UI, no database, and no third-party dependencies —
 the whole system is a function from an event stream to a set of projections.
 

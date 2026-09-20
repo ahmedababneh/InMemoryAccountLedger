@@ -284,3 +284,34 @@ otherwise was the same lie one level up.
 71 tests: 70 pass, 1 fails by design. pyflakes clean. `run.py` output verified
 against the figures I worked out on paper before writing any code, and against
 the block quoted in the README.
+
+### 2026-09-20T15:20Z — README called it "double-entry". It is not.
+
+Checking my own claims before writing the architecture document, and the very
+first line of the README described this as a "double-entry ledger core". It is
+single-entry: `Entry` carries one `account_id` and one signed amount, with no
+contra leg and no transaction grouping that would force the legs to sum to
+zero. Nothing in the system would notice a posting that went to one account and
+nowhere else, because that is what every posting does.
+
+Corrected the README rather than the code. Adding a real contra side is a
+structural change well outside what the brief asked for, and claiming it is the
+part that was actually wrong.
+
+### 2026-09-20T15:26Z — measured the scaling instead of guessing at it
+
+Benchmarked the replay along three axes before writing anything about
+performance. The result was not what I expected:
+
+    100x events   (30 -> 3,000, 6 days)     0.01s ->   0.52s      ~52x
+    30x days      (6 -> 180, 10 ev/day)     0.01s -> 125.62s  ~12,562x
+    100x accounts (2 -> 200, 30 days)        0.72s ->  13.33s     ~18x
+
+Transaction volume is close to linear and entirely survivable. **Window length
+is cubic** — the measured exponent is 2.8, which is what you get from two
+day-sweeps that each re-scan every entry across every prior day. A year-long
+window for two accounts would take a quarter of an hour.
+
+And at 200 accounts over 30 days there are 2,363 accrual records against 1,343
+ledger entries: the derived journal is larger than the log it is derived from,
+on a fixed 300 events. Accruals grow with accounts x days, not with volume.
