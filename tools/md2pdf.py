@@ -49,136 +49,85 @@ body_html = md.convert(body_md.strip())
 # the <h2> itself -- a zero-height <hr> is not a reliable break anchor.
 
 CSS = """
-@page {
-  size: A4;
-  margin: 20mm 17mm 18mm 17mm;
-}
+/* Tuned for a 3-4 page document. The content is dense and mostly tables, so
+   the layout is compressed rather than the text cut: tighter leading, smaller
+   table type, no per-section page breaks. */
+@page { size: A4; margin: 12mm 12mm 14mm 12mm; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body {
   font-family: "Bitstream Charter", "DejaVu Serif", serif;
-  font-size: 10pt;
-  line-height: 1.5;
+  font-size: 8.5pt;
+  line-height: 1.33;
   color: #1a1a1a;
   margin: 0;
   hyphens: none;
 }
 
-/* ---- cover block ---- */
-.cover { margin-bottom: 2mm; }
+/* ---- masthead ---- */
+.cover { margin: 0 0 3mm 0; }
 .cover h1 {
   font-family: "DejaVu Sans", sans-serif;
-  font-size: 26pt;
-  font-weight: 700;
-  letter-spacing: -0.4pt;
-  margin: 0 0 1mm 0;
-  color: #111;
+  font-size: 17pt; font-weight: 700; letter-spacing: -0.3pt;
+  margin: 0; color: #111; display: inline;
 }
 .cover .sub {
   font-family: "DejaVu Sans", sans-serif;
-  font-size: 9pt;
-  color: #6a6a6a;
-  letter-spacing: 1.4pt;
-  text-transform: uppercase;
-  margin: 0 0 5mm 0;
+  font-size: 7.5pt; color: #777; letter-spacing: 1.1pt;
+  text-transform: uppercase; display: inline; margin-left: 3mm;
 }
-.cover .lead p {
-  font-size: 10.5pt;
-  color: #333;
-  margin: 0 0 2mm 0;
-}
-.rule { border: 0; border-top: 2px solid #111; margin: 5mm 0 0 0; }
+.cover .lead p { font-size: 8.5pt; color: #333; margin: 1.5mm 0 0 0; }
+.rule { border: 0; border-top: 1.5px solid #111; margin: 2.5mm 0 0 0; }
 
-/* ---- headings ---- */
+/* ---- headings: no page breaks, tight spacing ---- */
+body > hr { display: none; }
 h2 {
   font-family: "DejaVu Sans", sans-serif;
-  font-size: 15pt;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 4mm 0;
-  padding-bottom: 2mm;
-  border-bottom: 1px solid #d0d0d0;
-  break-after: avoid;
-  break-inside: avoid;
+  font-size: 11pt; font-weight: 700; color: #111;
+  margin: 5mm 0 2mm 0; padding-bottom: 1.2mm;
+  border-bottom: 1px solid #c8c8c8;
+  break-after: avoid; break-inside: avoid;
 }
+body > h2:first-of-type { margin-top: 3mm; }
 h3 {
   font-family: "DejaVu Sans", sans-serif;
-  font-size: 11pt;
-  font-weight: 700;
-  color: #222;
-  margin: 6mm 0 2.5mm 0;
-  break-after: avoid;
-  break-inside: avoid;
+  font-size: 9pt; font-weight: 700; color: #222;
+  margin: 3.2mm 0 1.4mm 0;
+  break-after: avoid; break-inside: avoid;
 }
-p { margin: 0 0 2.8mm 0; orphans: 2; widows: 2; }
+p { margin: 0 0 1.7mm 0; orphans: 2; widows: 2; }
 
-/* Each numbered section starts on a fresh page; the first one follows the
-   cover block on page 1. Source "---" dividers are redundant in print. */
-body > hr { display: none; }
-body > h2 { break-before: page; }
-body > h2:first-of-type { break-before: auto; margin-top: 6mm; }
+ul, ol { margin: 0 0 1.8mm 0; padding-left: 4.5mm; }
+li { margin-bottom: 0.8mm; orphans: 2; widows: 2; }
+li > p { margin-bottom: 0.7mm; }
 
-/* ---- lists ---- */
-ul, ol { margin: 0 0 3mm 0; padding-left: 6mm; }
-li { margin-bottom: 1.6mm; orphans: 2; widows: 2; }
-li > p { margin-bottom: 1.2mm; }
-
-/* ---- code ---- */
 code {
   font-family: "DejaVu Sans Mono", monospace;
-  font-size: 8.4pt;
-  background: #f2f3f5;
-  padding: 0.3mm 1mm;
-  border-radius: 2px;
-  color: #23303d;
+  font-size: 7.2pt; background: #f2f3f5;
+  padding: 0.2mm 0.7mm; border-radius: 2px; color: #23303d;
 }
 pre {
-  background: #f7f8fa;
-  border: 1px solid #e0e3e8;
-  border-left: 3px solid #8b97a8;
-  border-radius: 3px;
-  padding: 3mm 4mm;
-  margin: 0 0 4mm 0;
-  break-inside: avoid;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+  background: #f7f8fa; border: 1px solid #e0e3e8; border-left: 2.5px solid #8b97a8;
+  border-radius: 2px; padding: 1.8mm 2.5mm; margin: 0 0 2mm 0;
+  break-inside: avoid; white-space: pre-wrap; word-wrap: break-word;
 }
-pre code {
-  background: none; padding: 0; font-size: 8.6pt; line-height: 1.45; color: #23303d;
-}
+pre code { background: none; padding: 0; font-size: 7.2pt; line-height: 1.35; }
 
-/* ---- tables ---- */
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0 0 4.5mm 0;
+  width: 100%; border-collapse: collapse; margin: 0 0 2.4mm 0;
   font-family: "DejaVu Sans", sans-serif;
-  font-size: 8.2pt;
-  line-height: 1.38;
-  break-inside: auto;
+  font-size: 6.9pt; line-height: 1.28; break-inside: auto;
 }
 thead { display: table-header-group; }
 tr { break-inside: avoid; }
 th {
-  background: #eceef1;
-  text-align: left;
-  font-weight: 700;
-  color: #111;
-  padding: 1.8mm 2.2mm;
-  border: 1px solid #ccd0d6;
+  background: #ebedf0; text-align: left; font-weight: 700; color: #111;
+  padding: 1mm 1.4mm; border: 1px solid #ccd0d6;
 }
-td {
-  padding: 1.8mm 2.2mm;
-  border: 1px solid #dde0e5;
-  vertical-align: top;
-}
+td { padding: 1mm 1.4mm; border: 1px solid #dde0e5; vertical-align: top; }
 tbody tr:nth-child(even) td { background: #fafbfc; }
-td code, th code { font-size: 7.6pt; background: #e9ebef; }
-/* numeric-looking columns read better right-aligned, but the source mixes
-   prose and figures per column, so alignment stays left and only the
-   monospace figures are tightened. */
+td code, th code { font-size: 6.4pt; background: #e9ebef; padding: 0 0.5mm; }
 
 strong { font-weight: 700; color: #000; }
-em { font-style: italic; }
 a { color: #1a4d8f; text-decoration: none; }
 """
 

@@ -344,3 +344,18 @@ Also confirmed by direct test: an account that transacts once and then sits
 idle appends one accrual record per day forever — 40 records over 40 idle days
 — unless its balance is below the AED 12.50 dust threshold, in which case zero.
 The journal grows only for accounts worth having.
+
+### 2026-09-20T16:12Z — PDF down from 9 pages to 4
+
+The first PDF gave every numbered section its own page, which read well and ran
+to nine. Compressed the layout rather than cutting content: dropped the
+per-section page breaks, body 10pt to 8.5pt, leading 1.5 to 1.33, tables 8.2pt
+to 6.9pt, margins 20/17mm to 12mm, and folded the cover block into an inline
+masthead. Four pages, all content intact (verified by extracting the text back
+out and checking the figures).
+
+Tried going further for three. It did not work: body 8.2pt with 6.6pt tables
+still produced four pages, just with smaller type and more whitespace on the
+last one. Reverted — no page saved, only legibility lost. The content sits at
+about three and a half pages, so four is where it lands without either cutting
+material or dropping below a readable size.
