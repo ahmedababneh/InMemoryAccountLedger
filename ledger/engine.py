@@ -382,7 +382,7 @@ class Engine:
         """
         for account_id in self.book.accounts:
             for day in range(self.policy.first_day, today + 1):
-                balance = self.book.closing_balance(account_id, day, known_through=today)
+                balance = self.book.interest_basis(account_id, day, known_through=today)
                 computed = self.policy.interest.accrual_for(balance)
                 current = self.book.net_accrual_for_day(account_id, day)
                 if computed == current:

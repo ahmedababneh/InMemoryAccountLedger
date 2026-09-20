@@ -239,13 +239,22 @@ class Book:
     # -- projections ------------------------------------------------------
 
     def closing_balance(
-        self, account_id: str, day: Day, known_through: Optional[Day] = None
+        self,
+        account_id: str,
+        day: Day,
+        known_through: Optional[Day] = None,
+        exclude_kinds: tuple = (),
     ) -> Money:
         """Sum of entries with value_date <= day, known as of `known_through`.
 
         `known_through=None` means "using everything in the book", i.e. the
         restated view. Passing a day gives the point-in-time view that the
         ledger actually held at that day's close.
+
+        `exclude_kinds` exists for one purpose: the interest basis must be the
+        closing balance *before* interest is capitalised onto it, otherwise
+        Day 6 would earn interest on its own interest. Naming the exclusion
+        makes that independent of the order the day's closing steps run in.
         """
         total = self.currency_of(account_id).zero()
         for entry in self.entries:
@@ -255,8 +264,21 @@ class Book:
                 continue
             if known_through is not None and entry.booked_day > known_through:
                 continue
+            if entry.kind in exclude_kinds:
+                continue
             total = total + entry.amount
         return total
+
+    def interest_basis(
+        self, account_id: str, day: Day, known_through: Optional[Day] = None
+    ) -> Money:
+        """The closing balance interest is computed on: excludes capitalisation."""
+        return self.closing_balance(
+            account_id,
+            day,
+            known_through=known_through,
+            exclude_kinds=(EntryKind.INTEREST_CAPITALISATION,),
+        )
 
     def hold_states(
         self, account_id: str, known_through: Day
@@ -313,12 +335,31 @@ class Book:
                 return fee
         return None
 
-    def net_accrual_for_day(self, account_id: str, day: Day) -> Money:
+    def net_accrual_for_day(
+        self, account_id: str, day: Day, evaluated_through: Optional[Day] = None
+    ) -> Money:
+        """Net accrual for `day`, summing that day's records.
+
+        `evaluated_through` gives the point-in-time answer: what the accrual
+        journal said for that day as of the end of some earlier day, before a
+        backdated entry forced a revision.  Without it you get the final net.
+        """
         total = self.currency_of(account_id).zero()
         for record in self.accruals:
-            if record.account_id == account_id and record.accrual_day == day:
-                total = total + record.amount
+            if record.account_id != account_id or record.accrual_day != day:
+                continue
+            if evaluated_through is not None and record.evaluated_on > evaluated_through:
+                continue
+            total = total + record.amount
         return total
+
+    def accrual_revisions(self, account_id: str, day: Day) -> tuple[AccrualRecord, ...]:
+        """Every record touching one day's accrual, oldest first."""
+        return tuple(
+            r
+            for r in self.accruals
+            if r.account_id == account_id and r.accrual_day == day
+        )
 
     def entries_booked_on(self, day: Day, account_id: Optional[str] = None):
         return tuple(

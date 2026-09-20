@@ -92,3 +92,27 @@ That settles four acceptance criteria as wrong: 2, 6, 7 and 8. Criterion 5 is
 the interesting one -- it is a conditional whose antecedent never fires,
 because Auth-B is declined. Writing that up carefully rather than just calling
 it wrong.
+
+### 2026-09-20T13:06Z — `ledger/report.py` and `run.py`, plus two bugs in my own reporting
+
+Caught two things the report was quietly misrepresenting:
+
+1. The per-day "interest accrued today" line read the *final* net accrual, so
+   Day 2 printed 0.09 — the restated figure — when the ledger had actually
+   booked 0.10 at Day 2's close. Added `evaluated_through` to
+   `net_accrual_for_day` so the daily section is genuinely point-in-time, and
+   added an explicit "interest revised for earlier days" block so the
+   restatement is visible where it happens rather than inferred.
+
+2. The reconciliation table showed a Day 6 basis of AED 390.93, which includes
+   the capitalisation credit that was not in the basis used. The number was
+   right by accident — the accrual sweep runs before capitalisation — but the
+   displayed basis was a lie, and the correctness depended on step ordering.
+   Added `Book.interest_basis`, which excludes capitalisation entries by kind.
+   Now Day 6 cannot earn interest on its own interest regardless of what order
+   the closing steps run in.
+
+Neither changed a single output figure. Both were worth fixing: the first
+because a point-in-time report that silently shows restated numbers defeats the
+purpose, the second because "correct only because of statement order" is a bug
+waiting for a refactor.
