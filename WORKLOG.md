@@ -55,3 +55,40 @@ I had started with a single running balance per account and a list of entries.
 Threw it away within a few minutes: it cannot represent the two answers above
 at the same time, which is the entire substance of this exercise. Recorded in
 REJECTED.md.
+
+### 2026-09-20T12:46Z — `ledger/policy.py`
+
+Pulled every number out of the engine. The overdraft fee is keyed by currency
+and BHD is deliberately *absent*: the brief gives a fee for AED only, so an
+overdrawn BHD account raises `PolicyNotConfigured` instead of posting an
+AED-shaped 25 into a 3dp account. Verified the accrual figures against the
+paper run: 250.00 -> 0.10, 465.00 -> 0.19, 415.00 -> 0.17, 5.00 -> 0.00.
+
+The 5.00 -> 0.00 case is worth noting: at 0.04%/day any AED balance under
+12.50 accrues literally nothing once rounded. Wrote that up in NUMBERS.md.
+
+### 2026-09-20T12:52Z — `ledger/engine.py`
+
+Fee sweep needed a fixpoint loop, not a single pass. A fee is value-dated to
+the day it is assessed *for*, so booking a Day-2 fee lowers Day 3, 4 and 5 as
+well and can itself create a new overdraft. First cut was one linear pass over
+the days; it happened to give the right answer for this stream and is still
+wrong, so it went. Recorded in REJECTED.md under abandoned approaches.
+
+Also botched `split_into_instalments` on the first attempt -- built the parts
+through a nested conditional expression with an inline `__import__` in it,
+which worked and was unreadable. Rewrote it in whole minor units with an
+explicit conservation check.
+
+### 2026-09-20T12:58Z — first full replay, and it matches the paper run
+
+ACC-001 closes: D1 250.00, D2 -370.00 -> restated 225.00, D5 -230.00 as of
+Day 5, 390.93 at end of Day 6. Three overdraft fees, all assessed on Day 5,
+value-dated to days 2, 4 and 5. Auth-A approved and settled; Auth-Z rejected;
+Auth-B DECLINED (available was already -155.00 when it arrived). ACC-002
+closes 10.008 with instalments 3.333 / 3.333 / 3.334.
+
+That settles four acceptance criteria as wrong: 2, 6, 7 and 8. Criterion 5 is
+the interesting one -- it is a conditional whose antecedent never fires,
+because Auth-B is declined. Writing that up carefully rather than just calling
+it wrong.
