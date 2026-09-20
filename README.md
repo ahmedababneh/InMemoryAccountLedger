@@ -112,7 +112,7 @@ Every entry ever written, in order, including the ones that were reversed. E7's
 python3 run_tests.py
 ```
 
-**67 tests: 66 pass, 1 fails on purpose.**
+**71 tests: 70 pass, 1 fails on purpose.**
 
 That one failure is a deliverable, not a defect. `run_tests.py` encodes the
 expectation and exits 0 when exactly the known test fails — and exits 1 if it
@@ -120,7 +120,7 @@ ever *stops* failing, so nobody can fix the design and leave a test asserting
 nothing.
 
 ```
-  66 passed
+  70 passed
   1 failed, as designed: test_fees_caused_solely_by_an_entry_that_was_reversed_are_not_refunded
 ```
 
@@ -235,7 +235,7 @@ ledger/
   scenario.py           the brief's event stream, as data
 tests/
   test_money.py                 9 tests
-  test_rules.py                26 tests
+  test_rules.py                30 tests
   test_acceptance_criteria.py  31 tests
   test_known_design_gap.py      1 test, fails on purpose
 ```

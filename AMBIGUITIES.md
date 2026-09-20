@@ -287,7 +287,9 @@ a request you can decline, a settled debit is a fact you must record.
 some days.
 
 **Chosen:** no expiry (`hold_expiry_days = None`). No period is specified, and
-inventing one — 3 days? 7? — would change results arbitrarily. Auth-B is
+inventing one — 3 days? 7? — would change results arbitrarily. Setting it
+raises rather than silently doing nothing, since no expiry logic exists behind
+the name. Auth-B is
 declined so it places no hold anyway; had it been approved, its 90.00 would
 have stayed held through Day 6.
 

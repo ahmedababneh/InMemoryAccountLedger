@@ -191,17 +191,25 @@ which beats "spread the residual randomly" for reconciliation.
 **Why not 3.334 each?** That sums to 10.002 and credits money nobody sent. See
 REJECTED.md criterion 7.
 
-## Policy flags with no scenario coverage
+## Policy flags, and which of them are real
 
-Four flags exist for behaviour the stream never exercises. Each is a deliberate
-choice recorded in AMBIGUITIES.md rather than an accident:
+Five flags record decisions the stream does not force. Two are genuine
+configuration with both branches implemented. **Three name a decision and have
+no alternative implementation behind them** — and rather than let them sit
+there looking configurable, setting one away from its default now raises
+`PolicyNotConfigured` with a message saying what implementing it would involve.
 
-| Flag | Value | Why |
-|------|-------|-----|
-| `settlement_releases_full_hold` | `True` | A settlement closes its authorization; E5's 15.00 shortfall is not left stranded. |
-| `allow_settlement_over_hold` | `True` | Card schemes permit overage; refusing a transaction the customer genuinely made is worse than a negative balance, which this ledger already handles. |
-| `hold_expiry_days` | `None` | No period is specified and inventing one (3 days? 7?) would change results arbitrarily. |
-| `reversal_refunds_consequential_fees` | `False` | The one I am least comfortable with. Left as the deliberately failing test rather than decided quietly. See `tests/test_known_design_gap.py`. |
+A flag that silently does nothing when flipped is worse than no flag: it lets a
+reader change it, see identical output, and conclude the setting does not
+matter.
+
+| Flag | Value | Implemented? | Why |
+|------|-------|--------------|-----|
+| `fee_value_dated_to_assessment_day` | `False` | **Yes, both branches** | Needed to prove criterion 2 is wrong under either reading of "the day assessed". REJECTED.md. |
+| `allow_settlement_over_hold` | `True` | **Yes, both branches** | Card schemes permit overage; refusing a transaction the customer genuinely made is worse than a negative balance, which this ledger already handles. |
+| `settlement_releases_full_hold` | `True` | No — raises if changed | A settlement closes its authorization; E5's 15.00 shortfall is not left stranded. The other branch would need the hold-expiry policy below to ever clear the residue. |
+| `hold_expiry_days` | `None` | No — raises if changed | No period is specified, and inventing one (3 days? 7?) would change results arbitrarily. |
+| `reversal_refunds_consequential_fees` | `False` | No — raises if changed | The one I am least comfortable with. Left as the deliberately failing test rather than decided quietly. See `tests/test_known_design_gap.py`. |
 
 ---
 

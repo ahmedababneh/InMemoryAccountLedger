@@ -112,6 +112,51 @@ class Policy:
     # AMBIGUITIES.md #5, REJECTED.md criterion 6, tests/test_known_design_gap.py
     reversal_refunds_consequential_fees: bool = False
 
+    # ------------------------------------------------------------------
+    # Three of the settings above record a decision but have no alternative
+    # implementation behind them: `settlement_releases_full_hold`,
+    # `hold_expiry_days` and `reversal_refunds_consequential_fees`. They are
+    # here because the decision needed a name and a place to be cited from,
+    # not because the other branch exists.
+    #
+    # A flag that looks like configuration and silently does nothing when
+    # flipped is worse than no flag: it invites someone to change it, watch the
+    # output stay identical, and conclude the setting does not matter. So
+    # setting one away from its documented default raises here, naming where
+    # the decision is written up and what implementing it would involve.
+    # ------------------------------------------------------------------
+
+    _UNIMPLEMENTED = {
+        "settlement_releases_full_hold": (
+            True,
+            "a settlement would have to release only the amount it settles and "
+            "leave the remainder held, which in turn needs the hold-expiry "
+            "policy of #11 to ever clear it. AMBIGUITIES.md #8.",
+        ),
+        "hold_expiry_days": (
+            None,
+            "holds would have to be released automatically N days after being "
+            "placed, and the brief specifies no N. AMBIGUITIES.md #11.",
+        ),
+        "reversal_refunds_consequential_fees": (
+            False,
+            "deliberately not implemented. See tests/test_known_design_gap.py, "
+            "which fails on purpose to keep this decision visible, and "
+            "AMBIGUITIES.md #5.",
+        ),
+    }
+
+    def __post_init__(self) -> None:
+        for name, (default, note) in self._UNIMPLEMENTED.items():
+            if getattr(self, name) != default:
+                raise PolicyNotConfigured(
+                    f"{name}={getattr(self, name)!r} is not implemented; the "
+                    f"only supported value is {default!r}. To change it, "
+                    f"{note}"
+                )
+        if self.last_day < self.first_day:
+            raise ValueError("last_day must not precede first_day")
+
     @property
     def days(self) -> range:
         return range(self.first_day, self.last_day + 1)

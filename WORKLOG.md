@@ -247,3 +247,40 @@ Dead imports removed across the package. Moved the test `sys.path` bootstrap
 into `tests/__init__.py` so no test module needs a dummy import to trigger it.
 67 tests now: 66 pass, 1 fails by design. Corrected the counts in the README,
 which I had already written against the old numbers.
+
+### 2026-09-20T14:56Z — the same bug again, three more times
+
+Having just fixed one flag that lied about its behaviour, I went looking for
+others instead of assuming it was isolated. Grepped every policy setting for
+whether anything actually reads it. Three do not:
+
+    settlement_releases_full_hold        declared, never read
+    hold_expiry_days                     declared, never read
+    reversal_refunds_consequential_fees  declared, never read
+
+All three look like configuration. Flipping any of them changed nothing
+whatsoever — a reader could set `hold_expiry_days = 3`, see identical output,
+and reasonably conclude hold expiry does not affect this scenario. It does not
+affect it because the feature does not exist.
+
+Considered implementing all three. Decided against: none is needed to support
+any claim I make, and the brief asks for a ledger core rather than a policy
+engine. `fee_value_dated_to_assessment_day` earned its implementation because
+REJECTED.md's refusal of criterion 2 depends on being able to run both
+branches; these three earn nothing.
+
+So they raise instead. `Policy.__post_init__` refuses any non-default value for
+an unimplemented setting, with a message naming what implementing it would
+involve and where the decision is documented. The flag still serves its real
+purpose — a name to cite from source comments — without pretending to be a
+switch.
+
+Then went back and corrected three documents that had described the reversal
+flag as a working "hook". It is a labelled decision, not a hook, and saying
+otherwise was the same lie one level up.
+
+### 2026-09-20T15:02Z — final state
+
+71 tests: 70 pass, 1 fails by design. pyflakes clean. `run.py` output verified
+against the figures I worked out on paper before writing any code, and against
+the block quoted in the README.

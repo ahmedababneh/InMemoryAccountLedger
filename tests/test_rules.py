@@ -284,3 +284,45 @@ class UnpricedCurrencyIsAConfigurationHoleNotAFreePass(unittest.TestCase):
         book = replayed().book
         self.assertEqual(book.closing_balance("ACC-002", 6), BHD.exact("10.008"))
         self.assertEqual([f for f in book.fees if f.account_id == "ACC-002"], [])
+
+
+class UnimplementedPolicyFlagsRefuseToLie(unittest.TestCase):
+    """Flags that record a decision must not pretend to be configuration.
+
+    Three settings name a decision but have no alternative implementation.
+    Found during review: flipping any of them changed nothing at all, which
+    would let a reader conclude the setting does not matter. They now raise.
+    """
+
+    def test_flipping_an_unimplemented_flag_raises_rather_than_no_ops(self):
+        from ledger.policy import Policy
+
+        for kwargs in (
+            {"settlement_releases_full_hold": False},
+            {"hold_expiry_days": 3},
+            {"reversal_refunds_consequential_fees": True},
+        ):
+            with self.subTest(**kwargs):
+                with self.assertRaises(PolicyNotConfigured):
+                    Policy(**kwargs)
+
+    def test_the_message_says_where_the_decision_is_documented(self):
+        from ledger.policy import Policy
+
+        with self.assertRaises(PolicyNotConfigured) as caught:
+            Policy(reversal_refunds_consequential_fees=True)
+        self.assertIn("test_known_design_gap", str(caught.exception))
+
+    def test_the_implemented_flag_is_not_caught_by_the_guard(self):
+        from ledger.policy import Policy
+
+        # fee_value_dated_to_assessment_day IS implemented, and REJECTED.md's
+        # refusal of criterion 2 depends on being able to set it.
+        policy = Policy(fee_value_dated_to_assessment_day=True)
+        self.assertTrue(policy.fee_value_dated_to_assessment_day)
+
+    def test_an_inverted_window_is_rejected(self):
+        from ledger.policy import Policy
+
+        with self.assertRaises(ValueError):
+            Policy(first_day=6, last_day=1)

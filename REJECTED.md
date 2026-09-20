@@ -450,6 +450,8 @@ turn, so it needs a second fixpoint loop running opposite to the first, and the
 two can oscillate unless "once per day" is read as "once ever" rather than "once
 currently in force".
 
-So the hook exists (`Policy.reversal_refunds_consequential_fees`, default
-`False`), the gap is documented, and a failing test makes sure it is decided
-rather than inherited.
+So the decision has a name (`Policy.reversal_refunds_consequential_fees`,
+default `False`), the gap is documented, and a failing test makes sure it is
+decided rather than inherited. Setting the flag `True` raises rather than
+quietly doing nothing — it marks where the choice lives, it is not a working
+switch, and pretending otherwise would be its own small lie.
