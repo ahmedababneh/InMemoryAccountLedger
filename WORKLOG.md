@@ -152,3 +152,30 @@ it could not be fixed by any refund policy.
 `tests/test_acceptance_criteria.py` (31). Every criterion has a test, including
 the four refused ones — an absent test would make a refusal look like an
 oversight.
+
+### 2026-09-20T13:47Z — the deliberately failing test
+
+Picked the fee/reversal gap over the other candidates. Considered and rejected:
+
+* *Sum-of-rounded vs rounded-sum* (0.93 vs 0.92). Real, but the brief mandates
+  sum-of-rounded explicitly, so a test against it would be arguing with the
+  spec rather than exposing a weakness in my design.
+* *No back-value window.* An entry value-dated to Day 1 arriving on Day 6
+  silently rewrites the whole window; real cores cap this. Genuine, but it is a
+  missing feature rather than a wrong behaviour, and the brief supplies no
+  window length.
+* *Fee/reversal asymmetry.* Chosen. The engine re-sweeps history to ADD fees a
+  backdated entry newly justifies, but never asks whether a fee it already
+  booked has lost its justification. The customer ends the window AED 75.00
+  down for an overdraft the ledger's own final numbers say never happened.
+
+It is the right one because the asymmetry is in code I wrote, not in the brief,
+and because "the record is immutable" and "the money stays taken" are two
+different claims that my design quietly conflates.
+
+### 2026-09-20T13:52Z — `run_tests.py`
+
+`unittest discover` exits non-zero by design here, which a CI job would call a
+broken build. The wrapper encodes the actual expectation: 64 pass, exactly one
+named test fails. It also exits 1 if the known gap *stops* failing, so nobody
+can quietly fix the design and leave the test asserting nothing.
