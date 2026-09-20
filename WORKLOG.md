@@ -35,3 +35,23 @@ Money rejects over-precise construction instead of silently rounding, and
 multiplication returns a raw `Decimal` so that a rate calculation physically
 cannot produce a storable amount without an explicit `Currency.round` call.
 That makes every rounding site greppable.
+
+### 2026-09-20T12:36Z — `ledger/records.py`
+
+All record types frozen. The append-only rule is enforced structurally, not by
+comment: `AppendOnlyLog` exposes `append` and iteration and nothing else. First
+real design consequence recorded — a hold cannot be "decremented", so placing
+and releasing became two records and "what is held now" became a projection.
+
+### 2026-09-20T12:40Z — `ledger/book.py`, and the decision that made the rest easy
+
+Balances are projections over two coordinates, `value_date` and `booked_day`,
+not a running total. `closing_balance(day, known_through)` answers both "what
+did we believe Day 2 closed at on Day 2" (AED 250.00) and "what did Day 2
+actually close at once E7 arrived" (AED -370.00). Smoke-tested both; the
+-370.00 of acceptance criterion 1 falls straight out.
+
+I had started with a single running balance per account and a list of entries.
+Threw it away within a few minutes: it cannot represent the two answers above
+at the same time, which is the entire substance of this exercise. Recorded in
+REJECTED.md.
