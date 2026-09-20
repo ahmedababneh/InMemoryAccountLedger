@@ -214,3 +214,36 @@ not what I expected:
 
 Also noticed `ledger/__init__.py` was missing entirely — the package had been
 importing as a namespace package this whole time. Added it with the module map.
+
+### 2026-09-20T14:38Z — README, then an adversarial re-read that found a real bug
+
+Wrote the README, then went back through the engine looking for things that
+were wrong rather than things that were missing. Found one, and it is the
+embarrassing kind: `assess_overdraft_fees` skipped any account whose currency
+had no configured fee. Silently. The comment sitting two lines below it said we
+"refuse loudly rather than posting a number the brief never gave us", and both
+NUMBERS.md and AMBIGUITIES.md #12 stated flatly that an overdrawn BHD account
+raises `PolicyNotConfigured`.
+
+It did not. It charged nothing and moved on.
+
+The documentation described the behaviour I intended and the code had the
+behaviour that was easy to write, and because ACC-002 never goes negative,
+nothing in the output or the test suite would ever have caught it. That is the
+worst shape a bug can have: invisible, and with three documents vouching for
+the opposite.
+
+Fixed the code rather than the docs, since the docs had it right. An overdrawn
+account in an unpriced currency now raises with the offending days named. Two
+tests added — one that the raise happens, one that a BHD account staying
+positive is unaffected, which is ACC-002's actual situation.
+
+Lesson recorded rather than quietly absorbed: I wrote three documents asserting
+a guard existed without once running the path that would exercise it.
+
+### 2026-09-20T14:44Z — pyflakes clean, counts corrected
+
+Dead imports removed across the package. Moved the test `sys.path` bootstrap
+into `tests/__init__.py` so no test module needs a dummy import to trigger it.
+67 tests now: 66 pass, 1 fails by design. Corrected the counts in the README,
+which I had already written against the old numbers.

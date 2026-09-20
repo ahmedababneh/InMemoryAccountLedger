@@ -23,7 +23,7 @@ from typing import Dict, Iterable, List
 
 from .book import Account, Book
 from .money import Money
-from .policy import DEFAULT_POLICY, Policy
+from .policy import DEFAULT_POLICY, Policy, PolicyNotConfigured
 from .records import (
     Day,
     EntryKind,
@@ -334,9 +334,24 @@ class Engine:
         """
         for account_id, account in self.book.accounts.items():
             if not self.policy.overdraft.has_fee_for(account.currency):
-                # No configured fee for this currency. Only matters if the
-                # account is actually overdrawn, in which case we refuse loudly
-                # rather than posting a number the brief never gave us.
+                # No fee is configured for this currency.  Staying silent is
+                # only safe while the account is not actually overdrawn -- an
+                # overdrawn account with no priced fee is a configuration hole,
+                # not a free pass, so it raises rather than quietly charging
+                # nothing.  `fee_for` carries the message.  AMBIGUITIES.md #12.
+                overdrawn = [
+                    day
+                    for day in range(self.policy.first_day, today + 1)
+                    if self.book.closing_balance(
+                        account_id, day, known_through=today
+                    ).is_negative()
+                ]
+                if overdrawn:
+                    raise PolicyNotConfigured(
+                        f"{account_id} closed negative on day(s) "
+                        f"{overdrawn} but no overdraft fee is configured for "
+                        f"{account.currency.code}; refusing to invent one"
+                    )
                 continue
             fee = self.policy.overdraft.fee_for(account.currency)
 

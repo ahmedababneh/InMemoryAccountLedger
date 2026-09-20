@@ -255,3 +255,32 @@ def _scenario():
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UnpricedCurrencyIsAConfigurationHoleNotAFreePass(unittest.TestCase):
+    """An overdrawn account in a currency with no configured fee must raise.
+
+    Added after review: the engine skipped such accounts silently, while the
+    comment beside it -- and NUMBERS.md, and AMBIGUITIES.md #12 -- all claimed
+    it refused loudly. The docs described the behaviour I wanted; the code had
+    the behaviour that was easy. This test pins the documented one.
+    """
+
+    def test_an_overdrawn_bhd_account_raises_rather_than_charging_nothing(self):
+        from ledger.book import Account
+        from ledger.money import BHD
+
+        events = [
+            Event("X1", 1, EventType.DEBIT, "ACC-BH", 1, BHD.exact("5.000")),
+        ]
+        engine = Engine([Account("ACC-BH", BHD, BHD.exact("0.000"))], events)
+        with self.assertRaises(PolicyNotConfigured) as caught:
+            engine.run()
+        self.assertIn("BHD", str(caught.exception))
+        self.assertIn("refusing to invent one", str(caught.exception))
+
+    def test_a_bhd_account_that_stays_positive_is_unaffected(self):
+        # ACC-002 is exactly this case: no BHD fee configured, never negative.
+        book = replayed().book
+        self.assertEqual(book.closing_balance("ACC-002", 6), BHD.exact("10.008"))
+        self.assertEqual([f for f in book.fees if f.account_id == "ACC-002"], [])
