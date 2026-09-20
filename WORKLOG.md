@@ -179,3 +179,38 @@ different claims that my design quietly conflates.
 broken build. The wrapper encodes the actual expectation: 64 pass, exactly one
 named test fails. It also exits 1 if the known gap *stops* failing, so nobody
 can quietly fix the design and leave the test asserting nothing.
+
+### 2026-09-20T14:05Z — REJECTED.md
+
+Four refusals: 2, 6, 7, 8. Criterion 5 accepted as stated, with a warning — it
+is a conditional whose antecedent is false, and calling a true statement
+"wrong" because its premise does not hold would itself be wrong. The honest
+answer is to accept the rule and assert the decline loudly.
+
+### 2026-09-20T14:14Z — AMBIGUITIES.md, 22 entries
+
+Numbered, and the numbers are cited from source comments so they cannot drift.
+Checked every cross-reference resolves. Marked each entry outcome-changing or
+not, because an ambiguity that cannot move a published figure is a different
+kind of thing from one that can, and lumping them together would pad the list.
+
+Caught one wrong claim while writing it: I had written that a residual hold
+after partial settlement would leave Auth-B "declined by 245.00 either way".
+It would be -260.00 in that world, not -245.00. The conclusion held — declined
+either way — but the number was wrong, so I fixed it.
+
+### 2026-09-20T14:22Z — NUMBERS.md, and two surprises
+
+Measured every sensitivity rather than reasoning about it, and two results were
+not what I expected:
+
+* The fee cascade threshold is exactly AED 30.00, *exclusive*. At 30.00 Day 3
+  closes at precisely 0.00 and zero is not negative, so three fees. At 30.01,
+  four. This scenario sits five dirhams from a different answer.
+* Halving the interest rate does not halve the interest. 0.04%/day gives
+  AED 0.93; 0.02%/day gives 0.47, not 0.465. Rounding six dailies independently
+  is not linear in the rate. That is the real answer to "why that value and not
+  half it" and I would not have got it by thinking about it.
+
+Also noticed `ledger/__init__.py` was missing entirely — the package had been
+importing as a namespace package this whole time. Added it with the module map.
