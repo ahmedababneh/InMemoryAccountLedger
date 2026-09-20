@@ -353,10 +353,15 @@ class Engine:
                     )
                     if not balance.is_negative():
                         continue
+                    value_date = (
+                        today
+                        if self.policy.fee_value_dated_to_assessment_day
+                        else day
+                    )
                     entry = self.book.post(
                         account_id,
                         -fee,
-                        value_date=day,
+                        value_date=value_date,
                         booked_day=today,
                         kind=EntryKind.OVERDRAFT_FEE,
                         memo=f"overdraft fee for day {day} (closing {balance})",

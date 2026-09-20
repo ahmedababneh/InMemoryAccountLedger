@@ -116,3 +116,39 @@ Neither changed a single output figure. Both were worth fixing: the first
 because a point-in-time report that silently shows restated numbers defeats the
 purpose, the second because "correct only because of statement order" is a bug
 waiting for a refactor.
+
+### 2026-09-20T13:19Z — made the criterion-2 refusal falsifiable instead of rhetorical
+
+I had written "criterion 2 is wrong under either reading of fee value-dating"
+as an assertion. That is exactly the kind of claim that turns out to be wrong
+when someone checks, so I implemented the other reading behind a policy flag
+(`fee_value_dated_to_assessment_day`) and ran it. Three fees either way — days
+2, 4 and 5 — only the value_dates move. Now a test proves it.
+
+### 2026-09-20T13:24Z — sensitivity sweep for NUMBERS.md
+
+Ran the replay across a range of fee amounts and interest rates rather than
+reasoning about "why not half it" from an armchair:
+
+* Fee AED 25.00 -> 3 fees. The fourth appears at AED 30.01, not 30.00: at
+  exactly 30.00 Day 3 closes at 0.00, and zero is not negative. This scenario
+  sits five dirhams from a fee cascade.
+* Halving the rate to 0.02% gives AED 0.47 capitalised, not half of 0.93
+  (0.465). Rounding six dailies is not linear in the rate. That is the real
+  answer to "why not half it" and I would not have found it by thinking.
+
+### 2026-09-20T13:31Z — counterfactual run for criterion 6
+
+Replayed the stream with E7 and E9 both removed to get the genuine "pre-E7
+values": Day 6 closes 466.03 with zero fees, against the actual 390.93 with
+three. And Auth-B is APPROVED in that world and DECLINED in the real one — a
+reversal on Day 6 cannot travel back and approve a card authorization refused
+on Day 5. That third reason is the one I find decisive, because unlike the fees
+it could not be fixed by any refund policy.
+
+### 2026-09-20T13:36Z — 64 tests green
+
+`tests/test_money.py` (9), `tests/test_rules.py` (24),
+`tests/test_acceptance_criteria.py` (31). Every criterion has a test, including
+the four refused ones — an absent test would make a refusal look like an
+oversight.

@@ -81,6 +81,15 @@ class Policy:
     first_day: int = 1
     last_day: int = 6
 
+    # Where an overdraft fee lands when a back-valued entry makes a *past* day
+    # close negative. False (the default) reads "booked with value_date equal
+    # to the day assessed" as the day whose balance was negative, so a Day-2
+    # overdraft discovered on Day 5 is value-dated to Day 2. True reads it as
+    # the day the assessment ran. The alternative exists so that REJECTED.md's
+    # claim -- that acceptance criterion 2 is wrong under *either* reading --
+    # is a test rather than an assertion. AMBIGUITIES.md #3.
+    fee_value_dated_to_assessment_day: bool = False
+
     # A settlement closes its authorization outright, releasing the whole
     # remaining hold even when it settles for less (E5: 185.00 against a
     # 200.00 hold). AMBIGUITIES.md #8.
